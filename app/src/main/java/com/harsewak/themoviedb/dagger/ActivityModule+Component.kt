@@ -2,10 +2,12 @@ package com.harsewak.themoviedb.dagger
 
 import androidx.appcompat.app.AppCompatActivity
 import com.harsewak.themoviedb.ApplicationComponent
+import com.harsewak.themoviedb.data.MovieInteractor
 import com.harsewak.themoviedb.navigation.MovieNavigation
 import com.harsewak.themoviedb.navigation.MovieNavigator
 import com.harsewak.themoviedb.view.MoviePresenter
 import com.harsewak.themoviedb.view.MoviesPresenter
+import com.harsewak.themoviedb.view.MoviesPresenterImpl
 import dagger.Component
 import dagger.Module
 import dagger.Provides
@@ -24,6 +26,14 @@ class ActivityModule(private val activity: AppCompatActivity) {
     fun providesMovieNavigator(): MovieNavigator {
         return MovieNavigation(activity)
     }
+
+    @Provides
+    fun moviesPresenter(movieInteractor: MovieInteractor,
+                         movieNavigator: MovieNavigator): MoviesPresenter {
+        return MoviesPresenterImpl(movieInteractor, movieNavigator)
+    }
+
+
 }
 
 @ForActivity

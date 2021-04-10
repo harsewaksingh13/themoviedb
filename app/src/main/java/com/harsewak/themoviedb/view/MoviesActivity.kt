@@ -5,6 +5,7 @@ import android.os.Bundle
 import com.harsewak.themoviedb.R
 import com.harsewak.themoviedb.base.BaseActivity
 import com.harsewak.themoviedb.base.BasePresenter
+import com.harsewak.themoviedb.base.Presenter
 import com.harsewak.themoviedb.base.View
 import com.harsewak.themoviedb.dagger.ActivityComponent
 import com.harsewak.themoviedb.data.Movie
@@ -66,18 +67,23 @@ interface MoviesView : View {
     fun onPageDataChanged(pageLimit: Int, loading: Boolean, lastPage: Boolean)
 }
 
-class MoviesPresenter @Inject constructor(
+interface MoviesPresenter: Presenter {
+    fun fetchMovies(page: Int)
+    fun movieDetails(t: Movie)
+}
+
+class MoviesPresenterImpl constructor(
     private val movieInteractor: MovieInteractor,
     private val movieNavigator: MovieNavigator
 ) :
-    BasePresenter<MoviesView>() {
+    BasePresenter<MoviesView>() , MoviesPresenter {
 
     override fun onCreate(view: View) {
         super.onCreate(view)
         fetchMovies()
     }
 
-    fun fetchMovies(page: Int) {
+    override fun fetchMovies(page: Int) {
         notify(isLoading = true, isLastPage = false)
         movieInteractor.nowPlayingMovies(page, {
             view?.displayMovies(it)
@@ -95,7 +101,7 @@ class MoviesPresenter @Inject constructor(
         fetchMovies(1)
     }
 
-    fun movieDetails(t: Movie) {
+   override fun movieDetails(t: Movie) {
         movieNavigator.movieDetails(t)
     }
 }
