@@ -1,0 +1,3 @@
+include ':smartrecyclerview'
+include ':app'
+rootProject.name = "themoviedb"
