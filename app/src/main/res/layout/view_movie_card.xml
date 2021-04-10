@@ -13,36 +13,35 @@
             android:id="@+id/posterImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:layout_height="300dp"
-            tools:src="@drawable/ic_launcher_foreground"
-            app:layout_constraintTop_toTopOf="parent"
-
+            android:scaleType="center"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_placeholder" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/titleText"
+            style="@style/TextAppearance.AppCompat.Large"
             android:layout_width="match_parent"
-            tools:text="Godzilla vs. Kong"
+            android:layout_height="wrap_content"
+            android:gravity="top"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:paddingBottom="8dp"
-            android:gravity="top"
             android:textStyle="bold"
-            style="@style/TextAppearance.AppCompat.Large"
             app:layout_constraintTop_toBottomOf="@id/posterImage"
-            android:layout_height="wrap_content"/>
+            tools:text="Godzilla vs. Kong" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/releaseDateText"
+            style="@style/TextAppearance.AppCompat.Medium"
             android:layout_width="match_parent"
-            app:layout_constraintTop_toBottomOf="@id/titleText"
+            android:layout_height="wrap_content"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:paddingBottom="8dp"
-            style="@style/TextAppearance.AppCompat.Medium"
-            tools:text="Mar 26, 2021"
-            android:layout_height="wrap_content"/>
+            app:layout_constraintTop_toBottomOf="@id/titleText"
+            tools:text="Mar 26, 2021" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </merge>

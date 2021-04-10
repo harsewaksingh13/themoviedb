@@ -22,8 +22,10 @@ open class BasicRecyclerView<A : BaseRecycledAdapter<T, H>, T, H> : RecyclerView
 
     internal var onItemClickListener: BaseRecycledAdapter.OnItemClickListener<T>? = null
 
-    internal var onItemPositionClickListener: BaseRecycledAdapter.OnItemPositionClickListener<T>? = null
+    internal var onItemPositionClickListener: BaseRecycledAdapter.OnItemPositionClickListener<T>? =
+        null
     internal var onItemLongClickListener: BaseRecycledAdapter.OnItemLongClickListener<T>? = null
+
 
     var items: MutableList<T>
         get() = adapter?.items ?: ArrayList()
@@ -88,7 +90,12 @@ open class BasicRecyclerView<A : BaseRecycledAdapter<T, H>, T, H> : RecyclerView
         setAdapter(a, items, GridLayoutManager(context, span))
     }
 
-    fun setGridAdapter(a: A, items: MutableList<*>, spanCount: Int, spanSizeLookup: GridLayoutManager.SpanSizeLookup) {
+    fun setGridAdapter(
+        a: A,
+        items: MutableList<*>,
+        spanCount: Int,
+        spanSizeLookup: GridLayoutManager.SpanSizeLookup
+    ) {
         val gridLayoutManager = GridLayoutManager(context, spanCount, VERTICAL, false)
         gridLayoutManager.spanSizeLookup = spanSizeLookup
         setAdapter(a, items, gridLayoutManager)
@@ -152,5 +159,48 @@ open class BasicRecyclerView<A : BaseRecycledAdapter<T, H>, T, H> : RecyclerView
         this.onItemLongClickListener = onItemLongClickListener
     }
 
+    interface OnPageChangeListener {
+        fun onPageChanged(page: Int)
+    }
 
+    private var pageSize = 10
+    private var isLastPage = false
+    private var isLoading = false
+
+    open fun onPageDataChanged(pageSize: Int, isLoading: Boolean, isLastPage: Boolean) {
+        this.pageSize = pageSize
+        this.isLoading = isLoading
+        this.isLastPage = isLastPage
+    }
+
+    /*
+     *
+     * */
+    open fun setPageListener(onPageListener: OnPageChangeListener) {
+        clearOnScrollListeners()
+        addOnScrollListener(object : OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val visibleItemCount = layoutManager?.childCount ?: 0
+                val totalItemCount = layoutManager?.itemCount ?: 0
+                val layoutManager = layoutManager
+                var firstVisibleItemPosition = 0
+                when (layoutManager) {
+                    is LinearLayoutManager -> {
+                        firstVisibleItemPosition =
+                            (getLayoutManager() as LinearLayoutManager).findFirstVisibleItemPosition()
+                    }
+                    is GridLayoutManager -> {
+                        firstVisibleItemPosition =
+                            (getLayoutManager() as GridLayoutManager).findFirstVisibleItemPosition()
+                    }
+                }
+                if (!isLoading && !isLastPage) {
+                    if (visibleItemCount + firstVisibleItemPosition >= totalItemCount && firstVisibleItemPosition >= 0 && totalItemCount >= pageSize) {
+                        onPageListener.onPageChanged(totalItemCount / pageSize)
+                    }
+                }
+            }
+        })
+    }
 }

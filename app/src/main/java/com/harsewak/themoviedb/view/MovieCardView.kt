@@ -35,7 +35,7 @@ class MovieCardView : CardView {
 
     fun bind(t: Movie) {
         titleText.text = t.title
-        posterImage.load(t.posterUrl)
+        posterImage.load(t.posterUrl, R.drawable.ic_placeholder)
         releaseDateText.text = t.releaseDate
     }
 

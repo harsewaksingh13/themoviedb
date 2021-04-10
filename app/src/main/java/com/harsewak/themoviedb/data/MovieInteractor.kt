@@ -9,6 +9,9 @@ import kotlinx.parcelize.Parcelize
  * Created by Harsewak Singh on 10/04/21.
  */
 interface MovieInteractor {
+
+    val pageLimit: Int
+
     fun nowPlayingMovies(
         page: Int = 1,
         responseHandler: ResponseHandler<List<Movie>>,
@@ -30,13 +33,15 @@ interface MovieInteractor {
 class MovieInteraction constructor(private val service: ServiceManager) : MovieInteractor {
 
     private val assetsRootURL = "https://www.themoviedb.org/t/p/w600_and_h600_bestv2"
+    override val pageLimit: Int
+        get() = 20 //api return 20 records by default
 
     override fun nowPlayingMovies(
         page: Int,
         responseHandler: ResponseHandler<List<Movie>>,
         errorHandler: ErrorHandler
     ): RequestHandler {
-        return service.movie.nowPlaying(page, 10).execute({ response ->
+        return service.movie.nowPlaying(page).execute({ response ->
             responseHandler(response.results.map {
                 Movie(
                     it.id,

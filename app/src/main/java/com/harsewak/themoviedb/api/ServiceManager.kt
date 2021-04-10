@@ -51,7 +51,7 @@ fun <T> RequestExecutor<T>.execute(responseHandler: ResponseHandler<T>, errorHan
 
 interface MovieService {
     @GET("movie/now_playing")
-    fun nowPlaying(@Query("page") page: Int, @Query("limit") limit: Int): RequestExecutor<MoviesResponse>
+    fun nowPlaying(@Query("page") page: Int): RequestExecutor<MoviesResponse>
 
     @GET("movie/{id}")
     fun movieDetails(@Path("id") id: Long): RequestExecutor<MovieResponse>

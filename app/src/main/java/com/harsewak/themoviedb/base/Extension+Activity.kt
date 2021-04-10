@@ -4,16 +4,11 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
-import android.graphics.Rect
-import android.os.Build
 import android.os.Parcelable
-import android.text.TextUtils
-import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -21,7 +16,6 @@ import android.widget.RelativeLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
 import com.bumptech.glide.Glide
-import com.bumptech.glide.RequestManager
 import com.harsewak.themoviedb.MovieApplication
 import com.harsewak.themoviedb.R
 import kotlin.math.roundToInt
@@ -54,7 +48,11 @@ fun Context.inflate(@LayoutRes layoutId: Int, root: ViewGroup? = null): View {
 fun ImageView.load(url: String?, @DrawableRes placeholder: Int? = null) {
 
     url?.let {
-        Glide.with(context).load(it).into(this)
+        placeholder?.let {
+            Glide.with(context).load(url).placeholder(it).into(this)
+        } ?: run {
+            Glide.with(context).load(url).into(this)
+        }
     } ?: run {
         placeholder?.let {
             setImageResource(placeholder)
@@ -71,7 +69,10 @@ fun View.setHeightMatchParent() {
 }
 
 fun View.setLayoutParams() {
-    val layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,FrameLayout.LayoutParams.WRAP_CONTENT)
+    val layoutParams = FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.WRAP_CONTENT,
+        FrameLayout.LayoutParams.WRAP_CONTENT
+    )
     setLayoutParams(layoutParams)
 }
 

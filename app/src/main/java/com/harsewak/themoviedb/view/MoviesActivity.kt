@@ -11,6 +11,7 @@ import com.harsewak.themoviedb.data.Movie
 import com.harsewak.themoviedb.data.MovieInteractor
 import com.harsewak.themoviedb.navigation.MovieNavigator
 import com.harsewak.view.BaseRecycledAdapter
+import com.harsewak.view.BasicRecyclerView
 import com.harsewak.view.SmartRecyclerView
 import javax.inject.Inject
 
@@ -19,22 +20,20 @@ class MoviesActivity : BaseActivity<MoviesPresenter>(), MoviesView {
     private lateinit var moviesRecyclerView: SmartRecyclerView<Movie, MovieCardView>
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_movies)
         moviesRecyclerView = findViewById(R.id.recyclerView)
-    }
-
-    override fun presenter(component: ActivityComponent): MoviesPresenter {
-        return component.moviesPresenter
-    }
-
-    override fun displayMovies(movies: List<Movie>) {
         moviesRecyclerView.setOnItemClickListener(object :
             BaseRecycledAdapter.OnItemClickListener<Movie> {
             override fun onItemClick(t: Movie) {
                 presenter?.movieDetails(t)
             }
         })
+        moviesRecyclerView.setPageListener(object: BasicRecyclerView.OnPageChangeListener{
+            override fun onPageChanged(page: Int) {
+                presenter?.fetchMovies(page)
+            }
+        })
+        val movies: MutableList<Movie> = mutableListOf()
         moviesRecyclerView.smartBinder(object :
             SmartRecyclerView.SmartViewBinder<Movie, MovieCardView> {
             override fun bind(view: MovieCardView, t: Movie) {
@@ -44,12 +43,27 @@ class MoviesActivity : BaseActivity<MoviesPresenter>(), MoviesView {
             override fun itemView(context: Context): MovieCardView {
                 return MovieCardView(context)
             }
-        }).grid(movies.toMutableList(), 2)
+        }).grid(movies, 2)
+        super.onCreate(savedInstanceState)
+    }
+
+    override fun presenter(component: ActivityComponent): MoviesPresenter {
+        return component.moviesPresenter
+    }
+
+    override fun displayMovies(movies: List<Movie>) {
+        moviesRecyclerView.items.addAll(movies)
+        moviesRecyclerView.adapter?.notifyDataSetChanged()
+    }
+
+    override fun onPageDataChanged(pageLimit: Int, loading: Boolean, lastPage: Boolean) {
+        moviesRecyclerView.onPageDataChanged(pageLimit, loading, lastPage)
     }
 }
 
 interface MoviesView : View {
     fun displayMovies(movies: List<Movie>)
+    fun onPageDataChanged(pageLimit: Int, loading: Boolean, lastPage: Boolean)
 }
 
 class MoviesPresenter @Inject constructor(
@@ -63,12 +77,22 @@ class MoviesPresenter @Inject constructor(
         fetchMovies()
     }
 
-    private fun fetchMovies() {
-        movieInteractor.nowPlayingMovies(1, {
+    fun fetchMovies(page: Int) {
+        notify(isLoading = true, isLastPage = false)
+        movieInteractor.nowPlayingMovies(page, {
             view?.displayMovies(it)
+            notify(isLoading = false, isLastPage = it.isEmpty())
         }, {
             onError(it)
         })
+    }
+
+    private fun notify(isLoading: Boolean, isLastPage: Boolean) {
+        view?.onPageDataChanged(movieInteractor.pageLimit, isLoading, isLastPage)
+    }
+
+    private fun fetchMovies() {
+        fetchMovies(1)
     }
 
     fun movieDetails(t: Movie) {
