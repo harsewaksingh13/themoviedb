@@ -6,27 +6,25 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.cardview.widget.CardView
 import com.harsewak.themoviedb.R
-import com.harsewak.themoviedb.base.inflate
-import com.harsewak.themoviedb.base.load
-import com.harsewak.themoviedb.base.setMarginDp
-import com.harsewak.themoviedb.base.setWidthLayoutParams
+import com.harsewak.themoviedb.base.*
 import com.harsewak.themoviedb.data.Movie
 
 /**
  * Created by Harsewak Singh on 10/04/21.
  */
-class MovieCardView: CardView {
+class MovieCardView : CardView {
 
-    lateinit var posterImage: AppCompatImageView
-    lateinit var titleText: AppCompatTextView
-    lateinit var releaseDateText: AppCompatTextView
+    private lateinit var posterImage: AppCompatImageView
+    private lateinit var titleText: AppCompatTextView
+    private lateinit var releaseDateText: AppCompatTextView
 
     init {
         setupView()
     }
 
     private fun setupView() {
-        setWidthLayoutParams()
+        setLayoutParams()
+        setWidthMatchParent()
         setMarginDp(4)
         val view = context.inflate(R.layout.view_movie_card, this)
         posterImage = view.findViewById(R.id.posterImage)
@@ -41,13 +39,25 @@ class MovieCardView: CardView {
         releaseDateText.text = t.releaseDate
     }
 
-    constructor(context: Context) : this(context, null)
+    constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
         setupView()
+        resetCard()
+    }
+
+    private fun resetCard() {
         radius = 0f
         cardElevation = 0f
     }
 
-
+    fun setupForHorizontal(): MovieCardView {
+        titleText.setLines(2)
+        layoutParams?.width = context.screenWidth - 200
+        return this
+    }
 }

@@ -3,11 +3,17 @@ package com.harsewak.themoviedb.base
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
+import android.graphics.Rect
+import android.os.Build
 import android.os.Parcelable
 import android.text.TextUtils
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -18,6 +24,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.harsewak.themoviedb.MovieApplication
 import com.harsewak.themoviedb.R
+import kotlin.math.roundToInt
 
 fun getApplication(context: Context): MovieApplication {
     return context.applicationContext as MovieApplication
@@ -56,15 +63,15 @@ fun ImageView.load(url: String?, @DrawableRes placeholder: Int? = null) {
 }
 
 fun View.setWidthMatchParent() {
-    if (layoutParams is FrameLayout) {
-        val layoutParams = layoutParams as FrameLayout.LayoutParams
-        layoutParams.width = FrameLayout.LayoutParams.MATCH_PARENT
-        setLayoutParams(layoutParams)
-    }
+    layoutParams?.width = MATCH_PARENT
 }
 
-fun View.setWidthLayoutParams() {
-    val layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.WRAP_CONTENT)
+fun View.setHeightMatchParent() {
+    layoutParams?.height = MATCH_PARENT
+}
+
+fun View.setLayoutParams() {
+    val layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,FrameLayout.LayoutParams.WRAP_CONTENT)
     setLayoutParams(layoutParams)
 }
 
@@ -74,18 +81,24 @@ fun View.setMargin(id: Int) {
     setMargin(margin, margin, margin, margin)
 }
 
-fun View.toPixels(dp: Float): Float {
-    val dm = context.resources.displayMetrics
-    val sFactor = dm.densityDpi.toFloat() / 160.0f
-    return sFactor * dp
-}
 
-fun View.toPixels(dp: Int): Float {
-    return toPixels(dp.toFloat())
-}
+/**
+ * Converts any given number from pixels (px) into density independent pixels (dp).
+ */
+val Number.px2dp: Float
+    get() = this.toFloat() / Resources.getSystem().displayMetrics.density
+
+/**
+ * Converts any given number from density independent pixels (dp) into pixels (px).
+ */
+val Number.dp2px: Int
+    get() = (this.toFloat() * Resources.getSystem().displayMetrics.density).roundToInt()
+
+val Context.screenWidth
+    get() = Resources.getSystem().displayMetrics.widthPixels
 
 fun View.setMarginDp(dp: Int) {
-    val margin = toPixels(dp.toFloat()).toInt()
+    val margin = dp.dp2px
     setMargin(margin, margin, margin, margin)
 }
 
@@ -102,3 +115,8 @@ fun View.setMargin(left: Int, top: Int, right: Int, bottom: Int) {
         }
     }
 }
+
+val String?.safe: String
+    get() {
+        return this ?: ""
+    }

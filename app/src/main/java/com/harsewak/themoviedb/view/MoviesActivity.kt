@@ -6,7 +6,6 @@ import com.harsewak.themoviedb.R
 import com.harsewak.themoviedb.base.BaseActivity
 import com.harsewak.themoviedb.base.BasePresenter
 import com.harsewak.themoviedb.base.View
-import com.harsewak.themoviedb.base.load
 import com.harsewak.themoviedb.dagger.ActivityComponent
 import com.harsewak.themoviedb.data.Movie
 import com.harsewak.themoviedb.data.MovieInteractor

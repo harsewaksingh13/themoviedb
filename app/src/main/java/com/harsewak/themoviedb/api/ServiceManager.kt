@@ -1,6 +1,6 @@
 package com.harsewak.themoviedb.api
 
-import com.harsewak.themoviedb.data.Movie
+import com.harsewak.themoviedb.data.CollectionResponse
 import com.harsewak.themoviedb.data.MovieResponse
 import com.harsewak.themoviedb.data.MoviesResponse
 import kotlinx.coroutines.*
@@ -54,7 +54,10 @@ interface MovieService {
     fun nowPlaying(@Query("page") page: Int, @Query("limit") limit: Int): RequestExecutor<MoviesResponse>
 
     @GET("movie/{id}")
-    fun movie(@Path("id") id: String): RequestExecutor<MovieResponse>
+    fun movieDetails(@Path("id") id: Long): RequestExecutor<MovieResponse>
+
+    @GET("collection/{id}")
+    fun collection(@Path("id") id: Long): RequestExecutor<CollectionResponse>
 }
 
 interface ServiceManager {
