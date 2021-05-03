@@ -1,7 +1,5 @@
 package com.harsewak.themoviedb.base
 
-import android.os.Bundle
-
 /**
  * Created by Harsewak Singh on 10/04/21.
  */
